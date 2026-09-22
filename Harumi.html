@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Harumi.exe ♡</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: #fff5fa;
+    font-family: Arial, sans-serif;
+    color: #4a3040;
+    overflow: hidden;
+}
+
+/* MAIN */
+
+.screen {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 18px;
+}
+
+.card {
+    width: 100%;
+    max-width: 380px;
+    background: white;
+    border-radius: 30px;
+    padding: 25px 20px;
+    text-align: center;
+    box-shadow:
+        0 15px 45px rgba(180, 100, 140, .15);
+}
+
+/* HEADER */
+
+.topEmoji {
+    font-size: 52px;
+    animation: floaty 2s ease-in-out infinite;
+}
+
+h1 {
+    margin: 8px 0 5px;
+    font-size: 25px;
+}
+
+.subtitle {
+    color: #987585;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* BATTERY */
+
+.battery {
+    margin: 18px auto 5px;
+    width: 100%;
+    height: 17px;
+    background: #f3dce7;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.fill {
+    width: 0%;
+    height: 100%;
+    background: #ff8fbc;
+    border-radius: 20px;
+    transition: width .45s ease;
+}
+
+.percent {
+    font-size: 12px;
+    color: #a47789;
+}
+
+/* GAME AREA */
+
+.gameArea {
+    height: 330px;
+    margin-top: 8px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 22px;
+}
+
+/* EMOJI TARGET */
+
+.target {
+    position: absolute;
+
+    width: 62px;
+    height: 62px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 38px;
+
+    cursor: pointer;
+    user-select: none;
+
+    filter: drop-shadow(
+        0 5px 7px rgba(150, 80, 110, .15)
+    );
+
+    animation:
+        targetFloat 1.8s ease-in-out infinite;
+
+    transition:
+        transform .15s ease,
+        opacity .15s ease;
+}
+
+.target:active {
+    transform: scale(.65) rotate(15deg);
+}
+
+/* HIT TEXT */
+
+.hit {
+    position: absolute;
+    pointer-events: none;
+
+    font-size: 13px;
+    font-weight: bold;
+
+    color: #ff78ad;
+
+    animation: hitUp .7s ease forwards;
+
+    z-index: 20;
+}
+
+/* STATUS */
+
+.status {
+    font-size: 13px;
+    color: #987585;
+    min-height: 20px;
+    margin-top: 3px;
+}
+
+/* COMPLETE */
+
+#complete {
+    display: none;
+}
+
+.bigEmoji {
+    font-size: 68px;
+    animation: bounce 1.3s infinite;
+}
+
+.message {
+    margin-top: 18px;
+    font-size: 14px;
+    line-height: 1.75;
+}
+
+.restart {
+    border: none;
+    padding: 12px 20px;
+
+    margin-top: 18px;
+
+    border-radius: 50px;
+
+    background: #f5e7ee;
+    color: #8d6575;
+
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.restart:active {
+    transform: scale(.94);
+}
+
+/* HEART / SPARKLE EFFECT */
+
+.spark {
+    position: fixed;
+    pointer-events: none;
+
+    font-size: 18px;
+
+    animation: sparkle 1.2s ease forwards;
+
+    z-index: 100;
+}
+
+/* ANIMATIONS */
+
+@keyframes targetFloat {
+
+    0%,100% {
+        transform: translateY(0) rotate(-5deg);
+    }
+
+    50% {
+        transform: translateY(-9px) rotate(5deg);
+    }
+}
+
+@keyframes hitUp {
+
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(-35px) scale(1.2);
+    }
+}
+
+@keyframes sparkle {
+
+    from {
+        opacity: 1;
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform:
+            translateY(-80px)
+            scale(.5)
+            rotate(25deg);
+    }
+}
+
+@keyframes floaty {
+
+    0%,100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-7px);
+    }
+}
+
+@keyframes bounce {
+
+    0%,100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- ========================= -->
+<!-- GAME SCREEN -->
+<!-- ========================= -->
+
+<div class="screen" id="gameScreen">
+
+    <div class="card">
+
+        <div class="topEmoji">
+            ✋
+        </div>
+
+        <h1>BOUNDARIES NANTI DULU</h1>
+
+        <div class="subtitle">
+            karna lu lagi butuh sum grass<br>
+            <b>tapi gua gak ada grass, jadi touch ini aja</b> 
+        </div>
+
+
+        <!-- BATTERY -->
+
+        <div class="battery">
+
+            <div
+                class="fill"
+                id="fill">
+            </div>
+
+        </div>
+
+        <div
+            class="percent"
+            id="percent">
+
+            0% energy
+
+        </div>
+
+
+        <div
+            class="status"
+            id="status">
+
+            punch the problems away 👊🏻
+
+        </div>
+
+
+        <!-- TARGETS -->
+
+        <div
+            class="gameArea"
+            id="gameArea">
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- ========================= -->
+<!-- COMPLETE SCREEN -->
+<!-- ========================= -->
+
+<div
+    class="screen"
+    id="complete">
+
+    <div class="card">
+
+        <div class="bigEmoji">
+            🐻‍❄️💗
+        </div>
+
+        <h1>
+            MOTIVASI HARI INI
+            <br>
+            for harumimut
+        </h1>
+
+        <div class="subtitle">
+
+            by : gua ✨
+
+        </div>
+
+
+        <div class="message">
+
+            <b>MOTIVASI!!!</b>
+
+            <br><br>
+
+            Semangat woy
+
+            <br><br>
+
+            Woy, semangat
+          
+            <br><br>
+
+            Semangat, semangat, semangat
+
+            <br><br>
+
+            Semangat gak lu
+
+            <br><br>
+
+            Semangatlah mi
+
+            <br><br>
+
+            <b>/mengirim energi semangat</b>
+
+            <br><br>
+
+            Pokoknya semangat
+
+            <br><br>
+
+            Sslalulah semangat
+
+        </div>
+
+
+        <button
+            class="restart"
+            onclick="restartGame()">
+
+            ↻ pijit gua lagi
+
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+
+/* =========================
+   GAME DATA
+========================= */
+
+const emojis = [
+
+    "🐈‍⬛",
+    "🪷",
+    "🌷",
+    "🍓",
+    "🫧",
+    "😢",
+    "♥️"
+
+];
+
+const problems = [
+
+    "inimah geli geli doang",
+    "sakit cok, pelanin dikitlah",
+    "nah, gitu",
+    "kanan dikit mi",
+    "nah iya, kencengin mi",
+    "ow yeah...",
+    "💦💦💦"
+
+];
+
+
+let destroyed = 0;
+
+const total = emojis.length;
+
+
+/* =========================
+   CREATE TARGETS
+========================= */
+
+function createTargets() {
+
+    const area =
+        document.getElementById("gameArea");
+
+    area.innerHTML = "";
+
+    destroyed = 0;
+
+    updateEnergy();
+
+
+    emojis.forEach((emoji, index) => {
+
+        const target =
+            document.createElement("div");
+
+        target.className = "target";
+
+        target.innerText = emoji;
+
+
+        /* RANDOM POSITION */
+
+        const maxX =
+            area.clientWidth - 65;
+
+        const maxY =
+            area.clientHeight - 65;
+
+
+        target.style.left =
+            Math.random() * maxX + "px";
+
+        target.style.top =
+            Math.random() * maxY + "px";
+
+
+        target.style.animationDelay =
+            Math.random() + "s";
+
+
+        /* CLICK */
+
+        target.onclick = function(event) {
+
+            hitTarget(
+                target,
+                index,
+                event
+            );
+
+        };
+
+
+        area.appendChild(target);
+
+    });
+
+}
+
+
+/* =========================
+   HIT TARGET
+========================= */
+
+function hitTarget(
+    target,
+    index,
+    event
+) {
+
+    /* prevent double click */
+
+    target.onclick = null;
+
+
+    destroyed++;
+
+
+    updateEnergy();
+
+
+    /* + ENERGY TEXT */
+
+    const hit =
+        document.createElement("div");
+
+    hit.className = "hit";
+
+    hit.innerText =
+        "+" +
+        Math.round(100 / total) +
+        "%";
+
+
+    hit.style.left =
+        target.offsetLeft + 20 + "px";
+
+    hit.style.top =
+        target.offsetTop + "px";
+
+
+    document
+        .getElementById("gameArea")
+        .appendChild(hit);
+
+
+    /* LITTLE POP */
+
+    target.style.transform =
+        "scale(1.5) rotate(20deg)";
+
+    target.style.opacity = "0";
+
+
+    /* SPARKLES */
+
+    createSparkles(
+        event.clientX,
+        event.clientY
+    );
+
+
+    setTimeout(() => {
+
+        target.remove();
+
+        hit.remove();
+
+    }, 250);
+
+
+    /* ALL DONE */
+
+    if (destroyed >= total) {
+
+        setTimeout(
+            finishGame,
+            600
+        );
+
+    }
+
+}
+
+
+/* =========================
+   UPDATE ENERGY
+========================= */
+
+function updateEnergy() {
+
+    const energy =
+        Math.round(
+            (destroyed / total) * 100
+        );
+
+
+    document
+        .getElementById("fill")
+        .style.width =
+        energy + "%";
+
+
+    document
+        .getElementById("percent")
+        .innerText =
+        energy + "% energy";
+
+
+    const status =
+        document.getElementById("status");
+
+
+    const messages = [
+
+        "pencet kayak lu pas mijit gua",
+
+        "inimah geli geli doang mi",
+
+        "sakit cok, pelanin dikitlah",
+
+        "nah, gitu",
+
+        "lagi mi",
+
+        "agak kanan dikit",
+
+        "ow yeah....",
+
+        "💦💦💦"
+
+    ];
+
+
+    status.innerText =
+        messages[destroyed];
+
+}
+
+
+/* =========================
+   SPARKLES
+========================= */
+
+function createSparkles(x, y) {
+
+    const symbols = [
+        "✦",
+        "✧",
+        "♡",
+        "✨",
+        "💗"
+    ];
+
+
+    for (
+        let i = 0;
+        i < 4;
+        i++
+    ) {
+
+        const spark =
+            document.createElement("div");
+
+        spark.className =
+            "spark";
+
+        spark.innerText =
+            symbols[
+                Math.floor(
+                    Math.random() *
+                    symbols.length
+                )
+            ];
+
+
+        spark.style.left =
+            x +
+            (Math.random() * 40 - 20)
+            + "px";
+
+
+        spark.style.top =
+            y +
+            (Math.random() * 30 - 15)
+            + "px";
+
+
+        document.body
+            .appendChild(spark);
+
+
+        setTimeout(() => {
+
+            spark.remove();
+
+        }, 1200);
+
+    }
+
+}
+
+
+/* =========================
+   FINISH
+========================= */
+
+function finishGame() {
+
+    document
+        .getElementById("gameScreen")
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById("complete")
+        .style.display =
+        "flex";
+
+
+    /* EXTRA SPARKLES */
+
+    for (
+        let i = 0;
+        i < 20;
+        i++
+    ) {
+
+        setTimeout(() => {
+
+            createSparkles(
+                Math.random() *
+                window.innerWidth,
+
+                Math.random() *
+                window.innerHeight
+            );
+
+        }, i * 80);
+
+    }
+
+}
+
+
+/* =========================
+   RESTART
+========================= */
+
+function restartGame() {
+
+    document
+        .getElementById("complete")
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById("gameScreen")
+        .style.display =
+        "flex";
+
+
+    createTargets();
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+createTargets();
+
+</script>
+
+</body>
+</html>
